@@ -1,4 +1,5 @@
-const CACHE_NAME = "daruchini-v1";
+const APP_VERSION = "0.10.1";
+const CACHE_NAME = `daruchini-cache-${APP_VERSION}`;
 const FILES_TO_CACHE = [
   "./",
   "./index.html",
