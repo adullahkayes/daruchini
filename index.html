@@ -146,21 +146,57 @@
 <script src="jspdf.umd.min.js"></script>
 
 <script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("service-worker.js");
-}
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("service-worker.js");
+  }
 </script>
 
 
 <script>
 const menuItems = [
-  { id: 1, serial: 1, name: "ডাল (ছোলা)", inEnglish: "Daal", price: 20 },
-  { id: 2, serial: 2, name: "সবজি", inEnglish: "Shobji", price: 25 },
-  { id: 3, serial: 3, name: "পরাটা", inEnglish: "Parata", price: 15 },
-  { id: 4, serial: 4, name: "তন্দুরি", inEnglish: "Tanduri", price: 40 },
-  { id: 5, serial: 5, name: "নেহারি", inEnglish: "Nehari", price: 80 },
-  { id: 6, serial: 6, name: "ডিম ভুনা", inEnglish: "Dim Bhuna", price: 30 },
-  { id: 7, serial: 7, name: "গিলা কলিজা", inEnglish: "Gila Kaloja", price: 50 }
+
+  { id: 1, serial: 1, name: "পরাটা", inEnglish: "Parata", price: 1 },
+  { id: 2, serial: 2, name: "তন্দুরি", inEnglish: "Tanduri", price: 1 },
+  { id: 3, serial: 3, name: "ছোলার ডাল", inEnglish: "Daal", price: 1 },
+  { id: 4, serial: 4, name: "সবজি", inEnglish: "Shabji", price: 1 },
+  { id: 5, serial: 5, name: "গিলা কলিজা", inEnglish: "Gila Kalija", price: 1 },
+  { id: 6, serial: 6, name: "নেহারি", inEnglish: "Nehari", price: 1 },
+
+
+  { id: 7, serial: 7, name: "খিচুড়ি", inEnglish: "Khichuri", price: 1 },
+  { id: 8, serial: 8, name: "তেহারি", inEnglish: "Tehari", price: 1 },
+  { id: 9, serial: 9, name: "ডিম ভুনা", inEnglish: "Dim Bhuna", price: 1 },
+  { id: 10, serial: 10, name: "গরু", inEnglish: "Garu", price: 1 },
+  { id: 11, serial: 11, name: "মুরগী", inEnglish: "Murgi", price: 1 },
+
+
+
+
+  { id: 12, serial: 12, name: "রোল", inEnglish: "Roll", price: 1 },
+  { id: 13, serial: 13, name: "পুরি", inEnglish: "Puri", price: 1 },
+  { id: 14, serial: 14, name: "সিঙারা", inEnglish: "Shigara", price: 1 },
+  { id: 15, serial: 15, name: "সামুচা", inEnglish: "Samucha", price: 1 },
+
+
+  { id: 16, serial: 16, name: "সাদা ভাত", inEnglish: "Shada Bhat", price: 1 },
+  { id: 17, serial: 17, name: "মাছ", inEnglish: "Mach", price: 1 },
+  { id: 18, serial: 18, name: "করলা", inEnglish: "Karalla", price: 1 },
+  { id: 20, serial: 20, name: "ভর্তা", inEnglish: "Varta", price: 1 },
+  { id: 21, serial: 21, name: "পাতলা ডাল", inEnglish: "Patla Daal", price: 1 },
+
+
+  { id: 22, serial: 22, name: "কলিজা সিঙারা", inEnglish: "Kalija Shigara", price: 1 },
+  { id: 24, serial: 24, name: "জিলাপি", inEnglish: "Jilapi", price: 1 },
+  { id: 25, serial: 25, name: "শর্মা", inEnglish: "Shawarma", price: 1 },
+  { id: 26, serial: 26, name: "মম", inEnglish: "Momo", price: 1 },
+  { id: 27, serial: 27, name: "চাউমিন", inEnglish: "Chaumin", price: 1 },
+  { id: 28, serial: 28, name: "পুডিং", inEnglish: "Puding", price: 1 },
+
+  { id: 29, serial: 29, name: "গ্রিল", inEnglish: "Grill", price: 1 },
+  { id: 30, serial: 30, name: "চিকেন চাপ", inEnglish: "Chicken Chaap", price: 1 },
+  { id: 33, serial: 33, name: "হালিম", inEnglish: "Momo", price: 1 }
+
+
 ];
 
 let selectedInvoiceOrder = null;
@@ -194,7 +230,7 @@ function renderMenu() {
     const manualInputId = `manual_${item.id}`;
 
     div.innerHTML = `
-      <div><strong>${item.name}</strong> — ৳${item.price}</div>
+      <div><strong>${item.serial}. ${item.name}</strong> — ৳${item.price}</div>
       <div class="quantity-row">
         <span class="qty-label">Quantity:</span>
         <input type="number" min="0" id="${manualInputId}" class="manual-input" value="0" />
@@ -387,7 +423,7 @@ function renderInvoice() {
       <tr><th>Item</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr>
       ${order.items.map(i => `
         <tr>
-          <td>${i.name}</td>
+          <td> ${i.name}</td>
           <td>${i.quantity}</td>
           <td>৳${i.price}</td>
           <td>৳${i.price * i.quantity}</td>
