@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#c49a6c">
+  
+  <!-- iOS PWA support -->
+  
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Daruchini">
+<link rel="apple-touch-icon" sizes="180x180" href="pwa-180x180.png">
+	
+  <!--------------------->
+
+  <title>Daruchini Menu Ordering</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+    .tab { padding: 10px 20px; background: #eee; cursor: pointer; border-radius: 5px; }
+    .tab.active { background: #c49a6c; color: white; }
+    .content { display: none; }
+    .content.active { display: block; }
+    table {
+      display: block;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    .menu-item { margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px dashed #ddd; }
+    .readonly { background: #f9f9f9; border: 1px solid #ccc; padding: 5px; margin-right: 8px; }
+    .invoice-link { color: #0b5bd3; cursor: pointer; text-decoration: underline; }
+    
+    .manual-input {
+      width: 60px;
+      padding: 4px;
+      margin-left: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      text-align: center;
+    }
+
+    .filter-group {
+      margin-bottom: 15px;
+    }
+    .filter-group label {
+      margin-right: 15px;
+      cursor: pointer;
+    }
+    
+    .form-row {
+      margin-bottom: 15px;   /* adds vertical space between rows */
+    }
+
+    .readonly {
+      margin-right: 10px;    /* adds horizontal space between inputs */
+      padding: 5px;          /* internal padding inside the input */
+    }
+
+
+
+    /* Coin picker styles */
+    .quantity-row { margin-top: 6px; }
+    .coin-picker { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+    .coin {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: #f0f0f0; border: 2px solid #d0d0d0; color: #333;
+      cursor: pointer; user-select: none; font-weight: 600;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.7), 0 1px 2px rgba(0,0,0,0.08);
+      transition: transform 0.05s ease, border-color 0.1s ease, background 0.1s ease;
+    }
+    .coin:hover { transform: translateY(-1px); background: #e9e9e9; }
+    .coin.selected {
+      background: #ffe08a; border-color: #c49a6c; color: #5a3d1a;
+      box-shadow: inset 0 2px 0 rgba(255,255,255,0.8), 0 0 0 2px rgba(196,154,108,0.25);
+    }
+    .coin.zero { opacity: 0.7; }
+    .qty-label { font-weight: 600; }
+
+    /* Pagination styles */
+    .pagination { margin-top: 20px; text-align: center; }
+    .pagination button { margin: 0 5px; padding: 5px 10px; }
+    .pagination span { margin: 0 10px; }
+  </style>
+</head>
+<body>
+
+<h1>দারুচিনি Menu</h1>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab(0)">📝 Take Order</div>
+  <div class="tab" onclick="showTab(1)">📋 View Orders</div>
+  <div class="tab" onclick="showTab(2)">🧾 Invoice</div>
+</div>
+
+<!-- TAB 1 -->
+<div class="content active" id="tab0">
+  <form id="orderForm">
+    <div class="form-row">
+      <label>Order #</label>
+      <input type="text" id="orderNo" class="readonly" readonly>
+      <label>Date</label>
+      <input type="text" id="orderDate" class="readonly" readonly> 
+      <button type="button" onclick="newOrder()">➕ New Order</button>     
+    </div>
+
+    <!-- spacing handled by CSS, no &nbsp; -->
+    <div class="form-row">
+      <label>Time</label>
+      <input type="text" id="orderTime" class="readonly" readonly>
+      <button type="submit">Submit Order</button>
+    </div>
+
+    <hr>
+    <div id="menuList"></div>
+    <button type="submit">Submit Order</button>
+  </form>
+
+</div>
+
+<!-- TAB 2 -->
+<div class="content" id="tab1">
+  <h2>Created Orders</h2>
+  <div class="filter-group">
+    <label><input type="radio" name="orderFilter" value="today" checked> Today</label>
+    <label><input type="radio" name="orderFilter" value="yesterday"> Yesterday</label>
+    <label><input type="radio" name="orderFilter" value="earlier"> Earlier</label>
+  </div>
+  <button onclick="exportOrdersPDF()">Export PDF</button>
+  <div id="ordersDisplay"></div>
+</div>
+
+
+
+<!-- TAB 3 -->
+<div class="content" id="tab2">
+  <h2>Invoice</h2>
+  <div id="invoiceDisplay"></div>
+</div>
+
+<script src="jspdf.umd.min.js"></script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
+</script>
+
+
+<script>
+const menuItems = [
+  { id: 1, serial: 1, name: "ডাল (ছোলা)", inEnglish: "Daal", price: 20 },
+  { id: 2, serial: 2, name: "সবজি", inEnglish: "Shobji", price: 25 },
+  { id: 3, serial: 3, name: "পরাটা", inEnglish: "Parata", price: 15 },
+  { id: 4, serial: 4, name: "তন্দুরি", inEnglish: "Tanduri", price: 40 },
+  { id: 5, serial: 5, name: "নেহারি", inEnglish: "Nehari", price: 80 },
+  { id: 6, serial: 6, name: "ডিম ভুনা", inEnglish: "Dim Bhuna", price: 30 },
+  { id: 7, serial: 7, name: "গিলা কলিজা", inEnglish: "Gila Kaloja", price: 50 }
+];
+
+let selectedInvoiceOrder = null;
+let editingOrderSerial = null;
+let currentPage = 1;
+const itemsPerPage = 5;
+
+function showTab(index) {
+  document.querySelectorAll('.tab').forEach((tab, i) => {
+    tab.classList.toggle('active', i === index);
+  });
+  document.querySelectorAll('.content').forEach((content, i) => {
+    content.classList.toggle('active', i === index);
+  });
+  if (index === 1) {
+    cleanupOldOrders();
+    renderOrders(currentPage);
+  }
+  if (index === 2) renderInvoice();
+  if (index === 0 && editingOrderSerial) loadOrderForEdit(editingOrderSerial);
+}
+
+function renderMenu() {
+  const container = document.getElementById('menuList');
+  container.innerHTML = '';
+  menuItems.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'menu-item';
+    const coinRowId = `coin_${item.id}`;
+    const hiddenInputId = `qty_${item.id}`;
+    const manualInputId = `manual_${item.id}`;
+
+    div.innerHTML = `
+      <div><strong>${item.name}</strong> — ৳${item.price}</div>
+      <div class="quantity-row">
+        <span class="qty-label">Quantity:</span>
+        <input type="number" min="0" id="${manualInputId}" class="manual-input" value="0" />
+        <div class="coin-picker" id="${coinRowId}">
+          ${[...Array(11).keys()].map(i => `
+            <div class="coin ${i===0 ? 'zero' : ''}" data-value="${i}">${i}</div>
+          `).join('')}
+        </div>
+        
+        <input type="hidden" name="${hiddenInputId}" id="${hiddenInputId}" value="0" />
+      </div>
+    `;
+    container.appendChild(div);
+
+    const coins = div.querySelectorAll('.coin');
+    const manualInput = div.querySelector(`#${manualInputId}`);
+    const hiddenInput = div.querySelector(`#${hiddenInputId}`);
+
+    // coin click updates manual + hidden
+    coins.forEach(coin => {
+      coin.addEventListener('click', () => {
+        coins.forEach(c => c.classList.remove('selected'));
+        coin.classList.add('selected');
+        hiddenInput.value = coin.dataset.value;
+        manualInput.value = coin.dataset.value;
+      });
+    });
+
+    // manual input updates hidden + coin selection
+    manualInput.addEventListener('input', () => {
+      const val = parseInt(manualInput.value || '0', 10);
+      hiddenInput.value = val;
+      coins.forEach(c => c.classList.remove('selected'));
+      const coinToSelect = Array.from(coins).find(c => parseInt(c.dataset.value) === val);
+      if (coinToSelect) coinToSelect.classList.add('selected');
+    });
+
+    // default select 0
+    coins[0].classList.add('selected');
+  });
+}
+
+
+function prepareOrderHeader() {
+  const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+  const nextSerial = orders.length + 1;
+  const now = new Date();
+  document.getElementById('orderNo').value = nextSerial;
+  document.getElementById('orderDate').value = now.toLocaleDateString();
+  document.getElementById('orderTime').value = now.toLocaleTimeString();
+}
+
+function saveOrder(e) {
+  e.preventDefault();
+  const selectedItems = [];
+  menuItems.forEach(item => {
+    const qty = parseInt(document.getElementById(`qty_${item.id}`).value || '0', 10);
+    if (qty > 0) {
+      selectedItems.push({ ...item, quantity: qty });
+    }
+  });
+  if (selectedItems.length === 0) return alert("No items selected.");
+
+  const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+  const now = new Date();
+
+  if (editingOrderSerial) {
+    const idx = orders.findIndex(o => o.serial === editingOrderSerial);
+    if (idx >= 0) {
+      orders[idx] = {
+        serial: editingOrderSerial,
+        date: now.toLocaleDateString(),
+        time: now.toLocaleTimeString(),
+        items: selectedItems
+      };
+    }
+    selectedInvoiceOrder = editingOrderSerial;
+    editingOrderSerial = null;
+  } else {
+    const order = {
+      serial: orders.length + 1,
+      date: now.toLocaleDateString(),
+      time: now.toLocaleTimeString(),
+      items: selectedItems
+    };
+    orders.push(order);
+    selectedInvoiceOrder = order.serial;
+  }
+  localStorage.setItem('orders', JSON.stringify(orders));
+  showTab(2);
+}
+
+function renderOrders(page = 1) {
+  const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+  const container = document.getElementById('ordersDisplay');
+  if (orders.length === 0) {
+    container.innerHTML = "<p>No orders yet.</p>";
+    return;
+  }
+
+  // get selected filter
+  const filter = document.querySelector('input[name="orderFilter"]:checked').value;
+  const todayStr = new Date().toLocaleDateString();
+  const yesterdayStr = new Date(Date.now() - 86400000).toLocaleDateString();
+
+  let filtered = orders.slice().reverse();
+  if (filter === "today") {
+    filtered = filtered.filter(o => o.date === todayStr);
+  } else if (filter === "yesterday") {
+    filtered = filtered.filter(o => o.date === yesterdayStr);
+  } else if (filter === "earlier") {
+    filtered = filtered.filter(o => o.date !== todayStr && o.date !== yesterdayStr);
+  }
+
+  if (filtered.length === 0) {
+    container.innerHTML = "<p>No orders for this filter.</p>";
+    return;
+  }
+
+  // 👉 Grand total across all filtered orders
+  const grandTotal = filtered.reduce((sum, order) => {
+    return sum + order.items.reduce((s, i) => s + i.price * i.quantity, 0);
+  }, 0);
+
+  // pagination logic
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  currentPage = Math.min(Math.max(page, 1), totalPages);
+
+  const start = (currentPage - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  const paginatedOrders = filtered.slice(start, end);
+
+  // render orders
+  const ordersHtml = paginatedOrders.map(order => {
+    const total = order.items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+    return `
+      <div style="margin-bottom: 12px;">
+        <h3>Order #${order.serial} — ${order.date} ${order.time}</h3>
+        <p>
+          Total: ৳${total}
+          — <span class="invoice-link" onclick="viewInvoice(${order.serial})">View Invoice</span>
+        </p>
+      </div>
+    `;
+  }).join('');
+
+  // pagination controls
+  const paginationHtml = `
+    <div class="pagination">
+      <button onclick="renderOrders(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>Prev</button>
+      <span> Page ${currentPage} of ${totalPages} </span>
+      <button onclick="renderOrders(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>
+    </div>
+  `;
+
+  // 👉 Show grand total above report
+  container.innerHTML = `<h3>Grand Total: ৳${grandTotal}</h3>` + ordersHtml + paginationHtml;
+}
+
+
+// re-render when filter changes
+document.querySelectorAll('input[name="orderFilter"]').forEach(radio => {
+  radio.addEventListener('change', () => renderOrders(1));
+});
+
+
+function viewInvoice(serial) {
+  selectedInvoiceOrder = serial;
+  showTab(2);
+}
+
+function renderInvoice() {
+  const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+  if (orders.length === 0) {
+    document.getElementById('invoiceDisplay').innerHTML = "<p>No orders yet.</p>";
+    return;
+  }
+  const order = selectedInvoiceOrder
+    ? orders.find(o => o.serial === selectedInvoiceOrder)
+    : orders[orders.length - 1];
+  if (!order) {
+    document.getElementById('invoiceDisplay').innerHTML = "<p>Invoice not found.</p>";
+    return;
+  }
+  const total = order.items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  document.getElementById('invoiceDisplay').innerHTML = `
+    Invoice for <b>Order #${order.serial}</b>
+    <p>Date: ${order.date} — Time: ${order.time}</p>
+    <table>
+      <tr><th>Item</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr>
+      ${order.items.map(i => `
+        <tr>
+          <td>${i.name}</td>
+          <td>${i.quantity}</td>
+          <td>৳${i.price}</td>
+          <td>৳${i.price * i.quantity}</td>
+        </tr>
+      `).join('')}
+      <tr><td colspan="3"><strong>Day Total Total</strong></td><td><strong>৳${total}</strong></td></tr>
+    </table>
+    <button onclick="editOrder(${order.serial})">Edit Order</button>
+  `;
+}
+
+function editOrder(serial) {
+  editingOrderSerial = serial;
+  showTab(0);
+}
+
+function loadOrderForEdit(serial) {
+  const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+  const order = orders.find(o => o.serial === serial);
+  if (!order) return;
+
+  // Fill header fields
+  document.getElementById('orderNo').value = order.serial;
+  document.getElementById('orderDate').value = order.date;
+  document.getElementById('orderTime').value = order.time;
+
+  // Reset menu
+  renderMenu();
+
+  // Fill coin selections
+  order.items.forEach(item => {
+    const qty = item.quantity;
+    const hiddenInput = document.getElementById(`qty_${item.id}`);
+    hiddenInput.value = qty;
+    const coins = document.querySelectorAll(`#coin_${item.id} .coin`);
+    coins.forEach(c => c.classList.remove('selected'));
+    const coinToSelect = Array.from(coins).find(c => parseInt(c.dataset.value) === qty);
+    if (coinToSelect) coinToSelect.classList.add('selected');
+  });
+}
+
+async function exportOrdersPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+  if (orders.length === 0) {
+    alert("No orders to export.");
+    return;
+  }
+
+  const filter = document.querySelector('input[name="orderFilter"]:checked').value;
+  const todayStr = new Date().toLocaleDateString();
+  const yesterdayStr = new Date(Date.now() - 86400000).toLocaleDateString();
+
+  let filtered = orders.slice().reverse();
+  if (filter === "today") {
+    filtered = filtered.filter(o => o.date === todayStr);
+  } else if (filter === "yesterday") {
+    filtered = filtered.filter(o => o.date === yesterdayStr);
+  } else if (filter === "earlier") {
+    filtered = filtered.filter(o => o.date !== todayStr && o.date !== yesterdayStr);
+  }
+
+  if (filtered.length === 0) {
+    alert("No orders found for this filter.");
+    return;
+  }
+
+  // 👉 Grand total across filtered orders
+  const grandTotal = filtered.reduce((sum, order) => {
+    return sum + order.items.reduce((s, i) => s + i.price * i.quantity, 0);
+  }, 0);
+
+  doc.setFontSize(14);
+  doc.text(`Orders (${filter})`, 10, 10);
+  doc.text(`Grand Total: ${grandTotal}`, 10, 20);
+
+  let y = 30;
+  filtered.forEach(order => {
+    doc.setFontSize(12);
+    doc.text(`Order #${order.serial} — ${order.date} ${order.time}`, 10, y);
+    y += 6;
+    order.items.forEach(item => {
+      doc.text(`- ${item.inEnglish} x${item.quantity} @ ${item.price} = ${item.price * item.quantity}`, 15, y);
+      y += 6;
+    });
+    const total = order.items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+    doc.text(`Total: ${total}`, 15, y);
+    y += 10;
+
+    if (y > 270) {
+      doc.addPage();
+      y = 20;
+    }
+  });
+
+  doc.save(`orders_${filter}.pdf`);
+}
+
+function cleanupOldOrders() {
+  const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+  if (orders.length === 0) return;
+
+  const todayStr = new Date().toLocaleDateString();
+  const yesterdayStr = new Date(Date.now() - 86400000).toLocaleDateString();
+
+  // Keep only orders from today, yesterday, or earlier day (2 days ago)
+  const earlierStr = new Date(Date.now() - 2 * 86400000).toLocaleDateString();
+
+  const filtered = orders.filter(o =>
+    o.date === todayStr ||
+    o.date === yesterdayStr ||
+    o.date === earlierStr
+  );
+
+  localStorage.setItem('orders', JSON.stringify(filtered));
+}
+
+function newOrder() {
+  // reset edit mode
+  editingOrderSerial = null;
+  selectedInvoiceOrder = null;
+
+  // regenerate order header
+  prepareOrderHeader();
+
+  // reset menu & quantities
+  renderMenu();
+
+  // switch to Take Order tab
+  showTab(0);
+}
+
+
+
+// Initialize
+document.getElementById('orderForm').addEventListener('submit', saveOrder);
+renderMenu();
+prepareOrderHeader();
+</script>
+
+</body>
+</html>
+
