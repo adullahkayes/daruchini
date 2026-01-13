@@ -103,13 +103,14 @@
   <form id="orderForm">
     <div class="form-row">
       <label>Order #</label>
-      <input type="text" id="orderNo" class="readonly" readonly>
-      <label>Date</label>
-      <input type="text" id="orderDate" class="readonly" readonly> 
+      <input type="text" id="orderNo" class="readonly" readonly>       
       <button type="button" onclick="newOrder()">➕ New Order</button>     
     </div>
 
-    <!-- spacing handled by CSS, no &nbsp; -->
+    <div class="form-row">
+      <label>Date</label>
+      <input type="text" id="orderDate" class="readonly" readonly>
+    </div>
     <div class="form-row">
       <label>Time</label>
       <input type="text" id="orderTime" class="readonly" readonly>
