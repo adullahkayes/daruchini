@@ -98,6 +98,11 @@
   <div class="tab" onclick="showTab(2)">🧾 Invoice</div>
 </div>
 
+
+<h4>Order</h4>
+
+    
+
 <!-- TAB 1 -->
 <div class="content active" id="tab0">
   <form id="orderForm">
@@ -117,11 +122,32 @@
       <button type="submit">Submit Order</button>
     </div>
 
-    <hr>
-    <div id="menuList"></div>
-    <button type="submit">Submit Order</button>
   </form>
 
+    <h4>Add Item</h4>
+
+    
+    <div id="addItemForm" class="form-row">
+      <div>
+        <span>Item SL#: </span>
+        <div id="itemSerialCoins" class="coin-picker">
+          <!-- Coins for serial numbers will be rendered dynamically -->
+        </div>
+      </div>
+      <div style="margin-top: 8px;">
+        <span>Quantity: </span>
+        <input type="number" min="1" max="10" id="addItemQtyInput" class="manual-input" value="0" />
+        <div id="addItemQtyCoins" class="coin-picker">
+          <!-- Coins 1-10 will render here -->
+        </div>
+      </div>
+      <button type="button" id="addItemButton" style="margin-top: 8px;">Add Item</button>
+    </div>
+
+    
+    <h4>Item List</h4>
+    
+    <div id="menuList"></div>
 </div>
 
 <!-- TAB 2 -->
@@ -270,9 +296,86 @@ function renderMenu() {
     });
 
     // default select 0
-    coins[0].classList.add('selected');
+    //coins[0].classList.add('selected');
   });
 }
+
+function renderAddItemForm() {
+  const serialContainer = document.getElementById('itemSerialCoins');
+  const qtyContainer = document.getElementById('addItemQtyCoins');
+
+  // Render serial coins
+  serialContainer.innerHTML = menuItems.map(item => `
+    <div class="coin" data-serial="${item.serial}">${item.serial}</div>
+  `).join('');
+
+  const qtyHTML = [...Array(10).keys()].map(i => `
+    <div class="coin" data-value="${i+1}">${i+1}</div>
+  `).join('');
+
+  // Render quantity coins (1-10)
+  qtyContainer.innerHTML =  '<div class="coin" data-value="0">0</div>' + qtyHTML;
+
+  let selectedSerial = null;
+  let selectedQty = 0;
+
+  // Serial selection
+  serialContainer.querySelectorAll('.coin').forEach(coin => {
+    coin.addEventListener('click', () => {
+      serialContainer.querySelectorAll('.coin').forEach(c => c.classList.remove('selected'));
+      coin.classList.add('selected');
+      selectedSerial = parseInt(coin.dataset.serial, 10);
+    });
+  });
+
+  // Quantity selection
+  qtyContainer.querySelectorAll('.coin').forEach(coin => {
+    coin.addEventListener('click', () => {
+      qtyContainer.querySelectorAll('.coin').forEach(c => c.classList.remove('selected'));
+      coin.classList.add('selected');
+      selectedQty = parseInt(coin.dataset.value, 10);
+      document.getElementById('addItemQtyInput').value = selectedQty;
+    });
+  });
+
+  // Manual input updates coin selection
+  const qtyInput = document.getElementById('addItemQtyInput');
+  qtyInput.addEventListener('input', () => {
+    const val = parseInt(qtyInput.value || '1', 10);
+    selectedQty = val;
+    qtyContainer.querySelectorAll('.coin').forEach(c => c.classList.remove('selected'));
+    const coinToSelect = Array.from(qtyContainer.querySelectorAll('.coin'))
+      .find(c => parseInt(c.dataset.value) === val);
+    if (coinToSelect) coinToSelect.classList.add('selected');
+  });
+
+  // Add Item button click
+  document.getElementById('addItemButton').onclick = () => {
+    if (!selectedSerial) return alert("Please select Item SL#");
+    const menuItem = menuItems.find(i => i.serial === selectedSerial);
+    if (!menuItem) return alert("Invalid item selected");
+
+    // Simulate quantity selection on menuList
+    const hiddenInput = document.getElementById(`qty_${menuItem.id}`);
+    hiddenInput.value = selectedQty;
+
+    // Update coins visually
+    const coinRow = document.getElementById(`coin_${menuItem.id}`);
+    coinRow.querySelectorAll('.coin').forEach(c => c.classList.remove('selected'));
+    const coinToSelect = Array.from(coinRow.querySelectorAll('.coin'))
+      .find(c => parseInt(c.dataset.value) === selectedQty);
+    if (coinToSelect) coinToSelect.classList.add('selected');
+
+    // Reset add item form for next item
+    serialContainer.querySelectorAll('.coin').forEach(c => c.classList.remove('selected'));
+    qtyContainer.querySelectorAll('.coin').forEach(c => c.classList.remove('selected'));
+    qtyContainer.querySelector('div[data-value="0"]').classList.add('selected');
+    qtyInput.value = 0;
+    selectedSerial = null;
+    selectedQty = 0;
+  };
+}
+
 
 
 function prepareOrderHeader() {
@@ -522,7 +625,13 @@ async function exportOrdersPDF() {
     }
   });
 
-  doc.save(`orders_${filter}.pdf`);
+  // --- Formatted timestamp YYYY-MM-DD-HH-MM-SS
+  const now = new Date();
+  const pad = n => n.toString().padStart(2, '0');
+  const datetimeStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}-${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
+
+
+  doc.save(`orders_${filter}_${datetimeStr}.pdf`);
 }
 
 function cleanupOldOrders() {
@@ -564,6 +673,7 @@ function newOrder() {
 // Initialize
 document.getElementById('orderForm').addEventListener('submit', saveOrder);
 renderMenu();
+renderAddItemForm();
 prepareOrderHeader();
 </script>
 
