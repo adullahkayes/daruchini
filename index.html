@@ -132,14 +132,9 @@
 
     <div class="form-row">
       <labe>Item : </labe>  
-      <input type="text" id="selectedmenuItem" class="readonly" style="padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem;" readonly>
+      <input type="text" id="selectedmenuItem" class="readonly" style="padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem; width: 7rem;" readonly>
+      <input type="number" readonly min="1" max="100" id="addItemQtyInput" class="manual-input" style="padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem; width: 1rem;" value="0" />
     </div>
-    <div class="form-row">
-      <labe>Qty : </labe>    
-      <input type="number" readonly min="1" max="100" id="addItemQtyInput" class="manual-input" style="padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem;" value="0" />
-      <button type="button" id="addItemButton" style="margin-top: 8px; margin-left: 1.5rem; padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem;  box-sizing: border-box;">Add</button>
-    </div>
-
     <div id="selectItemForm" class="form-row">
       <div style="background: #f8efe6; height: 2rem; display: flex; justify-content: center; align-items: center;">
         <span>Select Item</span>
@@ -156,6 +151,11 @@
           <!-- Coins 1-10 will render here -->
         </div>
       </div>
+
+      <div style="margin-top: 8px; height: 3rem; background-color: #f8efe6; display: flex; justify-content: center; align-items: center;">
+        <button type="button" id="addItemButton" style="box-sizing: border-box; height: 2rem; padding-left: 5rem; padding-right: 5rem;">Add</button>
+      </div>
+
 
       <h4 style="background-color: #f1dac1; padding-top: 1rem; padding-bottom: 1rem; padding-left: 1rem;">Added Items</h4>
 
@@ -584,14 +584,14 @@ function showAddedMenuItems(){
 
     document.getElementById('addedItemsDisplay').innerHTML = `
     <table>
-      <tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th><th>Action</th></tr>
+      <tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th><th></th></tr>
       ${addedMenuItemsArr.map(i => `
         <tr>
           <td> ${i.name}</td>
           <td>${i.quantity}</td>
-          <td>৳${i.price}</td>
-          <td>৳${i.price * i.quantity}</td>
-          <td><input type="button" value="remove" onclick="removeAddedMenuItem(${i.id})"></td>
+          <td>${i.price}</td>
+          <td>${i.price * i.quantity}</td>
+          <td><input type="button" value="❌" onclick="removeAddedMenuItem(${i.id})"></td>
         </tr>
       `).join('')}
       <tr><td colspan="3"><strong>Total</strong></td><td><strong>৳${total}</strong></td><td></td></tr>
