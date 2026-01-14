@@ -99,49 +99,58 @@
 </div>
 
 
-<h4 style="background-color: #c48649; padding-top: 1rem; padding-bottom: 1rem; padding-left: 1rem;">Order</h4>
+
 
     
 
 <!-- TAB 1 -->
 <div class="content active" id="tab0">
   <form id="orderForm">
-    <div class="form-row">
+
+    <div  style="background-color: #c48649; display: flex; justify-content: space-between; align-items: center; width: 100%;">
+      <h4 style="padding-left: 1rem;">Order</h4>
+      <button type="submit" style="margin-right: 1rem; padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem;">➕ Submit Order</button>
+    </div>
+
+    <div class="form-row" style="padding-top: 1rem;">
       <label>Order #</label>
-      <input type="text" id="orderNo" class="readonly" style="padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem;" readonly>       
-      <button type="button" onclick="newOrder()" style="padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem;">🔄 New Order</button>     
+      <input type="text" id="orderNo" class="readonly" style=" padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem;" readonly>       
     </div>
 
     <div class="form-row">
-      <label>Date</label>
-      <input type="text" id="orderDate" class="readonly" style="padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem;" readonly>
+      <label>Date   </label>
+      <input type="text" id="orderDate" class="readonly" style="width: 5rem; padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem;" readonly>
     </div>
     <div class="form-row">
-      <label>Time</label>
-      <input type="text" id="orderTime" class="readonly" style="padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem;" readonly>
-      <button type="submit" style="padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem;">➕ Submit Order</button>
+      <label>Time   </label>
+      <input type="text" id="orderTime" class="readonly" style="width: 5rem; padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem;" readonly>
+      <button type="button" onclick="newOrder()" style="padding-top: 1rem; padding-bottom: 1rem; padding-left: 1rem; padding-right: 1rem;">🔄 New Order</button>     
     </div>
   </form>
 
     <h4 style="background-color: #f1dac1; padding-top: 1rem; padding-bottom: 1rem; padding-left: 1rem;">Add Item</h4>
 
-    <div id="addItemForm" class="form-row">
+    <div class="form-row">
       <labe>Item : </labe>  
       <input type="text" id="selectedmenuItem" class="readonly" style="padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem;" readonly>
+    </div>
+    <div class="form-row">
       <labe>Qty : </labe>    
       <input type="number" readonly min="1" max="100" id="addItemQtyInput" class="manual-input" style="padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem;" value="0" />
       <button type="button" id="addItemButton" style="margin-top: 8px; margin-left: 1.5rem; padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem;">Add</button>
     </div>
 
     <div id="selectItemForm" class="form-row">
-      <div>
-        <span>Select Item: </span>
-        <div id="itemSerialCoins" class="coin-picker">
+      <div style="background: #f8efe6; height: 2rem; display: flex; justify-content: center; align-items: center;">
+        <span>Select Item</span>
+      </div>
+      <div id="itemSerialCoins" class="coin-picker">
           <!-- Coins for serial numbers will be rendered dynamically -->
-        </div>
+      </div>
+      <div style="background: #f8efe6; margin-top: 8px; height: 2rem; display: flex; justify-content: center; align-items: center;">
+        <span>Quantuty</span>
       </div>
       <div style="margin-top: 8px;">
-        <span>Quantity: </span>
         
         <div id="addItemQtyCoins" class="coin-picker">
           <!-- Coins 1-10 will render here -->
@@ -575,7 +584,7 @@ function showAddedMenuItems(){
 
     document.getElementById('addedItemsDisplay').innerHTML = `
     <table>
-      <tr><th>Item</th><th>Qty</th><th>Unit Price</th><th>Total</th><th>Action</th></tr>
+      <tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th><th>Action</th></tr>
       ${addedMenuItemsArr.map(i => `
         <tr>
           <td> ${i.name}</td>
