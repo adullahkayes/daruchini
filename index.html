@@ -19,8 +19,8 @@
   <title>Daruchini Menu Ordering</title>
   <style>
     body { font-family: sans-serif; margin: 20px; }
-    .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-    .tab { padding: 10px 20px; background: #eee; cursor: pointer; border-radius: 5px; }
+    .tabs { display: flex; gap: 1rem; margin-bottom: 20px; }
+    .tab { padding: 1rem 20px; background: #eee; cursor: pointer; border-radius: 5px; }
     .tab.active { background: #c49a6c; color: white; }
     .content { display: none; }
     .content.active { display: block; }
@@ -38,7 +38,7 @@
     .manual-input {
       width: 60px;
       padding: 4px;
-      margin-left: 10px;
+      margin-left: 1rem;
       border: 1px solid #ccc;
       border-radius: 4px;
       text-align: center;
@@ -57,7 +57,7 @@
     }
 
     .readonly {
-      margin-right: 10px;    /* adds horizontal space between inputs */
+      margin-right: 1rem;    /* adds horizontal space between inputs */
       padding: 5px;          /* internal padding inside the input */
     }
 
@@ -84,8 +84,8 @@
 
     /* Pagination styles */
     .pagination { margin-top: 20px; text-align: center; }
-    .pagination button { margin: 0 5px; padding: 5px 10px; }
-    .pagination span { margin: 0 10px; }
+    .pagination button { margin: 0 5px; padding: 5px 1rem; }
+    .pagination span { margin: 0 1rem; }
   </style>
 </head>
 <body>
@@ -99,7 +99,7 @@
 </div>
 
 
-<h4>Order</h4>
+<h4 style="background-color: #c48649; padding-top: 1rem; padding-bottom: 1rem; padding-left: 1rem;">Order</h4>
 
     
 
@@ -108,44 +108,54 @@
   <form id="orderForm">
     <div class="form-row">
       <label>Order #</label>
-      <input type="text" id="orderNo" class="readonly" readonly>       
-      <button type="button" onclick="newOrder()">➕ New Order</button>     
+      <input type="text" id="orderNo" class="readonly" style="padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem;" readonly>       
+      <button type="button" onclick="newOrder()" style="padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem;">🔄 New Order</button>     
     </div>
 
     <div class="form-row">
       <label>Date</label>
-      <input type="text" id="orderDate" class="readonly" readonly>
+      <input type="text" id="orderDate" class="readonly" style="padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem;" readonly>
     </div>
     <div class="form-row">
       <label>Time</label>
-      <input type="text" id="orderTime" class="readonly" readonly>
-      <button type="submit">Submit Order</button>
+      <input type="text" id="orderTime" class="readonly" style="padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem;" readonly>
+      <button type="submit" style="padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem;">➕ Submit Order</button>
     </div>
-
   </form>
 
-    <h4>Add Item</h4>
+    <h4 style="background-color: #f1dac1; padding-top: 1rem; padding-bottom: 1rem; padding-left: 1rem;">Add Item</h4>
 
-    
     <div id="addItemForm" class="form-row">
+      <labe>Item : </labe>  
+      <input type="text" id="selectedmenuItem" class="readonly" style="padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem;" readonly>
+      <labe>Qty : </labe>    
+      <input type="number" readonly min="1" max="100" id="addItemQtyInput" class="manual-input" style="padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem;" value="0" />
+      <button type="button" id="addItemButton" style="margin-top: 8px; margin-left: 1.5rem; padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem;">Add</button>
+    </div>
+
+    <div id="selectItemForm" class="form-row">
       <div>
-        <span>Item SL#: </span>
+        <span>Select Item: </span>
         <div id="itemSerialCoins" class="coin-picker">
           <!-- Coins for serial numbers will be rendered dynamically -->
         </div>
       </div>
       <div style="margin-top: 8px;">
         <span>Quantity: </span>
-        <input type="number" min="1" max="10" id="addItemQtyInput" class="manual-input" value="0" />
+        
         <div id="addItemQtyCoins" class="coin-picker">
           <!-- Coins 1-10 will render here -->
         </div>
       </div>
-      <button type="button" id="addItemButton" style="margin-top: 8px;">Add Item</button>
+
+      <h4 style="background-color: #f1dac1; padding-top: 1rem; padding-bottom: 1rem; padding-left: 1rem;">Added Items</h4>
+
+      <div id="addedItemsDisplay"></div>
+      
     </div>
 
     
-    <h4>Item List</h4>
+    <h4 style="background-color: #c48649; padding-top: 1rem; padding-bottom: 1rem; padding-left: 1rem;">Item List</h4>
     
     <div id="menuList"></div>
 </div>
@@ -229,7 +239,9 @@ const menuItems = [
 let selectedInvoiceOrder = null;
 let editingOrderSerial = null;
 let currentPage = 1;
-const itemsPerPage = 5;
+const itemsPerPage = 10;
+
+var addedMenuItemsArr = [];
 
 function showTab(index) {
   document.querySelectorAll('.tab').forEach((tab, i) => {
@@ -243,7 +255,21 @@ function showTab(index) {
     renderOrders(currentPage);
   }
   if (index === 2) renderInvoice();
-  if (index === 0 && editingOrderSerial) loadOrderForEdit(editingOrderSerial);
+  if (index === 0 && editingOrderSerial) {
+    loadOrderForEdit(editingOrderSerial);
+    addedMenuItemsArr = [];
+    menuItems.forEach(item => {
+      const qty = parseInt(document.getElementById(`qty_${item.id}`).value || '0', 10);
+      if (qty > 0) {
+        addedMenuItemsArr.push({ ...item, quantity: qty });
+      }
+    });
+    showAddedMenuItems();
+  } else if(index === 0){
+    addedMenuItemsArr = [];
+    showAddedMenuItems();
+  }
+  
 }
 
 function renderMenu() {
@@ -262,7 +288,7 @@ function renderMenu() {
         <span class="qty-label">Quantity:</span>
         <input type="number" min="0" id="${manualInputId}" class="manual-input" value="0" />
         <div class="coin-picker" id="${coinRowId}">
-          ${[...Array(11).keys()].map(i => `
+          ${[...Array(21).keys()].map(i => `
             <div class="coin ${i===0 ? 'zero' : ''}" data-value="${i}">${i}</div>
           `).join('')}
         </div>
@@ -309,11 +335,11 @@ function renderAddItemForm() {
     <div class="coin" data-serial="${item.serial}">${item.serial}</div>
   `).join('');
 
-  const qtyHTML = [...Array(10).keys()].map(i => `
+  const qtyHTML = [...Array(20).keys()].map(i => `
     <div class="coin" data-value="${i+1}">${i+1}</div>
   `).join('');
 
-  // Render quantity coins (1-10)
+  // Render quantity coins (1-20)
   qtyContainer.innerHTML =  '<div class="coin" data-value="0">0</div>' + qtyHTML;
 
   let selectedSerial = null;
@@ -325,6 +351,8 @@ function renderAddItemForm() {
       serialContainer.querySelectorAll('.coin').forEach(c => c.classList.remove('selected'));
       coin.classList.add('selected');
       selectedSerial = parseInt(coin.dataset.serial, 10);
+      const menuItem = menuItems.find(i => i.serial === selectedSerial);
+      document.getElementById('selectedmenuItem').value = menuItem ? menuItem.name : '';
     });
   });
 
@@ -352,6 +380,7 @@ function renderAddItemForm() {
   // Add Item button click
   document.getElementById('addItemButton').onclick = () => {
     if (!selectedSerial) return alert("Please select Item SL#");
+    if(selectedQty <= 0) return alert("Please select Quantity");
     const menuItem = menuItems.find(i => i.serial === selectedSerial);
     if (!menuItem) return alert("Invalid item selected");
 
@@ -370,10 +399,26 @@ function renderAddItemForm() {
     serialContainer.querySelectorAll('.coin').forEach(c => c.classList.remove('selected'));
     qtyContainer.querySelectorAll('.coin').forEach(c => c.classList.remove('selected'));
     qtyContainer.querySelector('div[data-value="0"]').classList.add('selected');
+
+    const alteredItem = addedMenuItemsArr.filter(itm => itm.id !== menuItem.id );
+    
+    const alterMenuItem = JSON.parse(JSON.stringify(menuItem)); 
+
+    alterMenuItem.quantity = selectedQty;
+
+    addedMenuItemsArr = [...alteredItem, alterMenuItem];
+
     qtyInput.value = 0;
     selectedSerial = null;
     selectedQty = 0;
+
+    document.getElementById('selectedmenuItem').value = '';
+
+    showAddedMenuItems();
+    
   };
+
+  
 }
 
 
@@ -467,6 +512,8 @@ function renderOrders(page = 1) {
   const end = start + itemsPerPage;
   const paginatedOrders = filtered.slice(start, end);
 
+
+
   // render orders
   const ordersHtml = paginatedOrders.map(order => {
     const total = order.items.reduce((sum, i) => sum + i.price * i.quantity, 0);
@@ -506,6 +553,47 @@ function viewInvoice(serial) {
   showTab(2);
 }
 
+function removeAddedMenuItem(removeItem){
+  menuItems.filter(item => item.id === removeItem).forEach(item => {
+    document.getElementById(`qty_${item.id}`).value = 0;
+  });
+  addedMenuItemsArr = addedMenuItemsArr.filter(itm => itm.id !== removeItem );
+  const coinRow = document.getElementById(`coin_${removeItem}`);
+  coinRow.querySelectorAll('.coin').forEach(c => c.classList.remove('selected'));
+  showAddedMenuItems();
+}
+
+function showAddedMenuItems(){
+
+  const total = addedMenuItemsArr.reduce((sum, itm) => {
+      return sum + (itm.price * itm.quantity);  // Add the price * quantity for each item
+  }, 0);
+
+  if(addedMenuItemsArr.length <=0){
+    document.getElementById('addedItemsDisplay').innerHTML = '';
+  } else {
+
+    document.getElementById('addedItemsDisplay').innerHTML = `
+    <table>
+      <tr><th>Item</th><th>Qty</th><th>Unit Price</th><th>Total</th><th>Action</th></tr>
+      ${addedMenuItemsArr.map(i => `
+        <tr>
+          <td> ${i.name}</td>
+          <td>${i.quantity}</td>
+          <td>৳${i.price}</td>
+          <td>৳${i.price * i.quantity}</td>
+          <td><input type="button" value="remove" onclick="removeAddedMenuItem(${i.id})"></td>
+        </tr>
+      `).join('')}
+      <tr><td colspan="3"><strong>Total</strong></td><td><strong>৳${total}</strong></td><td></td></tr>
+    </table>
+  `;
+
+  }
+
+  
+}
+
 function renderInvoice() {
   const orders = JSON.parse(localStorage.getItem('orders') || '[]');
   if (orders.length === 0) {
@@ -533,7 +621,7 @@ function renderInvoice() {
           <td>৳${i.price * i.quantity}</td>
         </tr>
       `).join('')}
-      <tr><td colspan="3"><strong>Day Total Total</strong></td><td><strong>৳${total}</strong></td></tr>
+      <tr><td colspan="3"><strong>Total</strong></td><td><strong>৳${total}</strong></td></tr>
     </table>
     <button onclick="editOrder(${order.serial})">Edit Order</button>
   `;
@@ -567,6 +655,8 @@ function loadOrderForEdit(serial) {
     const coinToSelect = Array.from(coins).find(c => parseInt(c.dataset.value) === qty);
     if (coinToSelect) coinToSelect.classList.add('selected');
   });
+
+  
 }
 
 async function exportOrdersPDF() {
@@ -657,6 +747,8 @@ function newOrder() {
   // reset edit mode
   editingOrderSerial = null;
   selectedInvoiceOrder = null;
+
+  document.getElementById('selectedmenuItem').value = '';
 
   // regenerate order header
   prepareOrderHeader();
