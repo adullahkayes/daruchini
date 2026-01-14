@@ -105,34 +105,15 @@
 
 <!-- TAB 1 -->
 <div class="content active" id="tab0">
-  <form id="orderForm">
 
     <div  style="background-color: #c48649; display: flex; justify-content: space-between; align-items: center; width: 100%;">
-      <h4 style="padding-left: 1rem;">Order</h4>
-      <button type="submit" style="margin-right: 1rem; padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem; box-sizing: border-box;">➕ Submit Order</button>
+      <h4 style="padding-left: 1rem;">Add Order Item</h4>
+      <button type="button" onclick="newOrder()" style="padding-top: 1rem; padding-bottom: 1rem; padding-left: 1rem; padding-right: 1rem; margin-right: 1rem;  box-sizing: border-box;" >🔄 New Order</button>     
     </div>
 
-    <div class="form-row" style="padding-top: 1rem;">
-      <label>Order #</label>
-      <input type="text" id="orderNo" class="readonly" style=" padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem;" readonly>       
-    </div>
-
-    <div class="form-row">
-      <label>Date   </label>
-      <input type="text" id="orderDate" class="readonly" style="width: 5rem; padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem;" readonly>
-    </div>
-    <div class="form-row">
-      <label>Time   </label>
-      <input type="text" id="orderTime" class="readonly" style="width: 5rem; padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem;" readonly>
-      <button type="button" onclick="newOrder()" style="padding-top: 1rem; padding-bottom: 1rem; padding-left: 1rem; padding-right: 1rem;  box-sizing: border-box;" >🔄 New Order</button>     
-    </div>
-  </form>
-
-    <h4 style="background-color: #f1dac1; padding-top: 1rem; padding-bottom: 1rem; padding-left: 1rem;">Add Item</h4>
-
-    <div class="form-row">
+    <div class="form-row" style="margin-top: 8px;">
       <input type="text" id="selectedmenuItem" class="readonly" style="padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem; width: 7rem;" readonly>
-      <input type="number" readonly min="1" max="100" id="addItemQtyInput" class="manual-input" style="padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem; width: 3rem;" value="0" />
+      <input type="number" readonly min="1" max="100" id="addItemQtyInput" class="manual-input" style="padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 2rem; width: 3rem;" value="0" />
     </div>
     <div id="selectItemForm" class="form-row">
       <div style="background: #f8efe6; height: 2rem; display: flex; justify-content: center; align-items: center;">
@@ -152,13 +133,32 @@
       </div>
 
       <div style="margin-top: 8px; height: 3rem; background-color: #f8efe6; display: flex; justify-content: center; align-items: center;">
-        <button type="button" id="addItemButton" style="box-sizing: border-box; height: 2rem; padding-left: 5rem; padding-right: 5rem;">Add</button>
+        <button type="button" id="addItemButton" style="box-sizing: border-box; height: 2rem; padding-left: 5rem; padding-right: 5rem;">Add Item</button>
       </div>
 
 
       <h4 style="background-color: #f1dac1; padding-top: 1rem; padding-bottom: 1rem; padding-left: 1rem;">Added Items</h4>
 
       <div id="addedItemsDisplay"></div>
+
+      <form id="orderForm">
+
+        <div  style="margin-top: 8px; background-color: #c48649; display: flex; justify-content: center;  width: 100%;">
+          <button type="submit" style="margin-right: 1rem; padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem; box-sizing: border-box;">➕ Submit Order</button>
+        </div>
+
+        <div class="form-row" style="padding-top: 1rem;">
+          <label>Order #</label>
+          <input type="text" id="orderNo" class="readonly" style=" padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem;" readonly>       
+        </div>
+
+        <div class="form-row">
+          <label>Time   </label>
+          <input type="text" id="orderDate" class="readonly" style="width: 5rem; padding-top: 1rem; padding-bottom: 1rem; padding-left: 1rem; padding-right: 1rem;" readonly>
+          <input type="text" id="orderTime" class="readonly" style="width: 5rem; padding-top: 1rem; padding-bottom: 1rem; padding-left: 1rem; padding-right: 1rem;" readonly>
+        </div>
+        
+      </form>
       
     </div>
 
@@ -593,7 +593,7 @@ function showAddedMenuItems(){
           <td><input type="button" value="❌" onclick="removeAddedMenuItem(${i.id})"></td>
         </tr>
       `).join('')}
-      <tr><td colspan="3"><strong>Total</strong></td><td><strong>৳${total}</strong></td><td></td></tr>
+      <tr><td colspan="3"><strong>Total</strong></td><td><strong>${total}</strong></td><td></td></tr>
     </table>
   `;
 
