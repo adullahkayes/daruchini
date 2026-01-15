@@ -101,8 +101,6 @@
 
 
 
-    
-
 <!-- TAB 1 -->
 <div class="content active" id="tab0">
 
@@ -144,7 +142,8 @@
       <form id="orderForm">
 
         <div  style="margin-top: 8px; background-color: #c48649; display: flex; justify-content: center;  width: 100%;">
-          <button type="submit" style="margin-right: 1rem; padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem; box-sizing: border-box;">➕ Submit Order</button>
+          <input type="text" hidden="true" id="cancelConfirm" class="readonly" style=" padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem;">       
+          <button id="orderSubmit" type="submit" style="margin-right: 1rem; padding-top: 1rem; padding-bottom: 1rem; padding-left: 1.5rem; padding-right: 1.5rem; box-sizing: border-box;">➕ Submit Order</button>
         </div>
 
         <div class="form-row" style="padding-top: 1rem;">
@@ -192,7 +191,7 @@
 
 <script>
   if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("service-worker.js");
+     navigator.serviceWorker.register("service-worker.js");
   }
 </script>
 
@@ -200,46 +199,53 @@
 <script>
 const menuItems = [
 
-  { id: 1, serial: 1, name: "পরাটা", inEnglish: "Parata", price: 1 },
-  { id: 2, serial: 2, name: "তন্দুরি", inEnglish: "Tanduri", price: 1 },
-  { id: 3, serial: 3, name: "ছোলার ডাল", inEnglish: "Daal", price: 1 },
-  { id: 4, serial: 4, name: "সবজি", inEnglish: "Shabji", price: 1 },
-  { id: 5, serial: 5, name: "গিলা কলিজা", inEnglish: "Gila Kalija", price: 1 },
-  { id: 6, serial: 6, name: "নেহারি", inEnglish: "Nehari", price: 1 },
+  { id: 1, serial: 111, name: "পরাটা (morn)", inEnglish: "Parata", price: 10 },
+  { id: 2, serial: 112, name: "পরাটা (eve)", inEnglish: "Parata", price: 20 },
+  { id: 3, serial: 2, name: "তন্দুরি", inEnglish: "Tanduri", price: 10 },
+  { id: 4, serial: 131, name: "ছোলার ডাল", inEnglish: "Daal", price: 20 },
+  { id: 5, serial: 132, name: "পাতলা ডাল", inEnglish: "Patla Daal", price: 10 },
+  { id: 6, serial: 4, name: "সবজি", inEnglish: "Shabji", price: 20 },
+  { id: 7, serial: 5, name: "গিলা কলিজা", inEnglish: "Gila Kalija", price: 60 },
+  { id: 8, serial: 6, name: "নেহারি", inEnglish: "Nehari", price: 180 },
 
 
-  { id: 7, serial: 7, name: "খিচুড়ি", inEnglish: "Khichuri", price: 1 },
-  { id: 8, serial: 8, name: "তেহারি", inEnglish: "Tehari", price: 1 },
-  { id: 9, serial: 9, name: "ডিম ভুনা", inEnglish: "Dim Bhuna", price: 1 },
-  { id: 10, serial: 10, name: "গরু", inEnglish: "Garu", price: 1 },
-  { id: 11, serial: 11, name: "মুরগী", inEnglish: "Murgi", price: 1 },
+  { id: 9, serial: 7, name: "খিচুড়ি", inEnglish: "Khichuri", price: 50 },
+  { id: 10, serial: 8, name: "তেহারি", inEnglish: "Tehari", price: 120 },
+  { id: 11, serial: 9, name: "ডিম ভুনা", inEnglish: "Dim Bhuna", price: 30 },
+  { id: 12, serial: 10, name: "গরু", inEnglish: "Garu", price: 180 },
+  { id: 13, serial: 111, name: "মুরগী (cock)", inEnglish: "Murgi", price: 100 },
+  { id: 14, serial: 112, name: "মুরগী (broiler)", inEnglish: "Murgi", price: 70 },
+
+  { id: 15, serial: 121, name: "রোল (chicken)", inEnglish: "Roll", price: 30 },
+  { id: 16, serial: 122, name: "রোল (vegitable)", inEnglish: "Roll", price: 20 },
+  { id: 17, serial: 13, name: "পুরি", inEnglish: "Puri", price: 10 },
+  { id: 18, serial: 141, name: "সিঙারা", inEnglish: "Shigara", price: 10 },
+  { id: 19, serial: 142, name: "কলিজা সিঙারা", inEnglish: "Kalija Shigara", price: 20 },
+  { id: 20, serial: 15, name: "সামুচা", inEnglish: "Samucha", price: 10 },
 
 
+  { id: 21, serial: 16, name: "সাদা ভাত", inEnglish: "Shada Bhat", price: 15 },
+  { id: 22, serial: 171, name: "মাছ (rui)", inEnglish: "Maach", price: 100 },
+  { id: 23, serial: 172, name: "মাছ (koi)", inEnglish: "Maach", price: 60 },
+  
+  { id: 24, serial: 18, name: "করলা", inEnglish: "Karalla", price: 30 },
+  { id: 25, serial: 201, name: "ভর্তা (alu)", inEnglish: "Varta", price: 10 },
+  { id: 26, serial: 202, name: "ভর্তা (maach)", inEnglish: "Varta", price: 30 },
+  
 
 
-  { id: 12, serial: 12, name: "রোল", inEnglish: "Roll", price: 1 },
-  { id: 13, serial: 13, name: "পুরি", inEnglish: "Puri", price: 1 },
-  { id: 14, serial: 14, name: "সিঙারা", inEnglish: "Shigara", price: 1 },
-  { id: 15, serial: 15, name: "সামুচা", inEnglish: "Samucha", price: 1 },
+  { id: 27, serial: 24, name: "জিলাপি", inEnglish: "Jilapi", price: 220 },
+  { id: 28, serial: 25, name: "শর্মা", inEnglish: "Shawarma", price: 90 },
+  { id: 29, serial: 26, name: "মম", inEnglish: "Momo", price: 100 },
+  { id: 30, serial: 27, name: "চাউমিন", inEnglish: "Chaumin", price: 50 },
+  { id: 31, serial: 28, name: "পুডিং", inEnglish: "Puding", price: 50 },
 
-
-  { id: 16, serial: 16, name: "সাদা ভাত", inEnglish: "Shada Bhat", price: 1 },
-  { id: 17, serial: 17, name: "মাছ", inEnglish: "Mach", price: 1 },
-  { id: 18, serial: 18, name: "করলা", inEnglish: "Karalla", price: 1 },
-  { id: 20, serial: 20, name: "ভর্তা", inEnglish: "Varta", price: 1 },
-  { id: 21, serial: 21, name: "পাতলা ডাল", inEnglish: "Patla Daal", price: 1 },
-
-
-  { id: 22, serial: 22, name: "কলিজা সিঙারা", inEnglish: "Kalija Shigara", price: 1 },
-  { id: 24, serial: 24, name: "জিলাপি", inEnglish: "Jilapi", price: 1 },
-  { id: 25, serial: 25, name: "শর্মা", inEnglish: "Shawarma", price: 1 },
-  { id: 26, serial: 26, name: "মম", inEnglish: "Momo", price: 1 },
-  { id: 27, serial: 27, name: "চাউমিন", inEnglish: "Chaumin", price: 1 },
-  { id: 28, serial: 28, name: "পুডিং", inEnglish: "Puding", price: 1 },
-
-  { id: 29, serial: 29, name: "গ্রিল", inEnglish: "Grill", price: 1 },
-  { id: 30, serial: 30, name: "চিকেন চাপ", inEnglish: "Chicken Chaap", price: 1 },
-  { id: 33, serial: 33, name: "হালিম", inEnglish: "Momo", price: 1 }
+  { id: 32, serial: 29, name: "গ্রিল", inEnglish: "Grill", price: 100 },
+  { id: 33, serial: 30, name: "চিকেন চাপ", inEnglish: "Chicken Chaap", price: 120 },
+  { id: 34, serial: 33, name: "হালিম", inEnglish: "Momo", price: 100 },
+  { id: 35, serial: 34, name: "Moglai", inEnglish: "Moglai", price: 80 },
+  { id: 36, serial: 35, name: "Naan", inEnglish: "Naan", price: 25 }
+  
 
 
 ];
@@ -252,6 +258,7 @@ const itemsPerPage = 10;
 var addedMenuItemsArr = [];
 
 function showTab(index) {
+
   document.querySelectorAll('.tab').forEach((tab, i) => {
     tab.classList.toggle('active', i === index);
   });
@@ -274,8 +281,22 @@ function showTab(index) {
     });
     showAddedMenuItems();
   } else if(index === 0){
+    
     addedMenuItemsArr = [];
     showAddedMenuItems();
+	
+	
+  }
+  
+  if(index === 0){
+	const ordrSbmt = document.getElementById('orderSubmit');
+	if(editingOrderSerial == null){
+		document.getElementById('cancelConfirm').hidden = true;
+		ordrSbmt.innerHTML = "➕ Submit Order";
+	} else {
+		document.getElementById('cancelConfirm').hidden = false;
+		ordrSbmt.innerHTML = "➖ Cancel Order";
+	}
   }
   
 }
@@ -313,20 +334,24 @@ function renderMenu() {
     // coin click updates manual + hidden
     coins.forEach(coin => {
       coin.addEventListener('click', () => {
-        coins.forEach(c => c.classList.remove('selected'));
-        coin.classList.add('selected');
-        hiddenInput.value = coin.dataset.value;
-        manualInput.value = coin.dataset.value;
+	    if(editingOrderSerial == null) {
+			coins.forEach(c => c.classList.remove('selected'));
+			coin.classList.add('selected');
+			hiddenInput.value = coin.dataset.value;
+			manualInput.value = coin.dataset.value;
+		}        
       });
     });
 
     // manual input updates hidden + coin selection
     manualInput.addEventListener('input', () => {
-      const val = parseInt(manualInput.value || '0', 10);
-      hiddenInput.value = val;
-      coins.forEach(c => c.classList.remove('selected'));
-      const coinToSelect = Array.from(coins).find(c => parseInt(c.dataset.value) === val);
-      if (coinToSelect) coinToSelect.classList.add('selected');
+	  if(editingOrderSerial == null){
+		  const val = parseInt(manualInput.value || '0', 10);
+		  hiddenInput.value = val;
+		  coins.forEach(c => c.classList.remove('selected'));
+		  const coinToSelect = Array.from(coins).find(c => parseInt(c.dataset.value) === val);
+		  if (coinToSelect) coinToSelect.classList.add('selected');
+	  }      
     });
 
     // default select 0
@@ -356,128 +381,190 @@ function renderAddItemForm() {
   // Serial selection
   serialContainer.querySelectorAll('.coin').forEach(coin => {
     coin.addEventListener('click', () => {
-      serialContainer.querySelectorAll('.coin').forEach(c => c.classList.remove('selected'));
-      coin.classList.add('selected');
-      selectedSerial = parseInt(coin.dataset.serial, 10);
-      const menuItem = menuItems.find(i => i.serial === selectedSerial);
-      document.getElementById('selectedmenuItem').value = menuItem ? menuItem.name : '';
-    });
+		  if(editingOrderSerial == null){
+			  serialContainer.querySelectorAll('.coin').forEach(c => c.classList.remove('selected'));
+			  coin.classList.add('selected');
+			  selectedSerial = parseInt(coin.dataset.serial, 10);
+			  const menuItem = menuItems.find(i => i.serial === selectedSerial);
+			  document.getElementById('selectedmenuItem').value = menuItem ? menuItem.name : '';
+			
+		  }
+      });
   });
 
   // Quantity selection
   qtyContainer.querySelectorAll('.coin').forEach(coin => {
     coin.addEventListener('click', () => {
-      qtyContainer.querySelectorAll('.coin').forEach(c => c.classList.remove('selected'));
-      coin.classList.add('selected');
-      selectedQty = parseInt(coin.dataset.value, 10);
-      document.getElementById('addItemQtyInput').value = selectedQty;
+		if(editingOrderSerial == null){
+		  qtyContainer.querySelectorAll('.coin').forEach(c => c.classList.remove('selected'));
+		  coin.classList.add('selected');
+		  selectedQty = parseInt(coin.dataset.value, 10);
+		  document.getElementById('addItemQtyInput').value = selectedQty;
+		}
     });
   });
 
   // Manual input updates coin selection
   const qtyInput = document.getElementById('addItemQtyInput');
   qtyInput.addEventListener('input', () => {
-    const val = parseInt(qtyInput.value || '1', 10);
-    selectedQty = val;
-    qtyContainer.querySelectorAll('.coin').forEach(c => c.classList.remove('selected'));
-    const coinToSelect = Array.from(qtyContainer.querySelectorAll('.coin'))
-      .find(c => parseInt(c.dataset.value) === val);
-    if (coinToSelect) coinToSelect.classList.add('selected');
+	if(editingOrderSerial == null){
+		const val = parseInt(qtyInput.value || '1', 10);
+		selectedQty = val;
+		qtyContainer.querySelectorAll('.coin').forEach(c => c.classList.remove('selected'));
+		const coinToSelect = Array.from(qtyContainer.querySelectorAll('.coin'))
+		  .find(c => parseInt(c.dataset.value) === val);
+		if (coinToSelect) coinToSelect.classList.add('selected');
+	}    
   });
 
   // Add Item button click
   document.getElementById('addItemButton').onclick = () => {
-    if (!selectedSerial) return alert("Please select Item SL#");
-    if(selectedQty <= 0) return alert("Please select Quantity");
-    const menuItem = menuItems.find(i => i.serial === selectedSerial);
-    if (!menuItem) return alert("Invalid item selected");
+    if(editingOrderSerial == null){
+		if (!selectedSerial) return alert("Please select Item SL#");
+		if(selectedQty <= 0) return alert("Please select Quantity");
+		const menuItem = menuItems.find(i => i.serial === selectedSerial);
+		if (!menuItem) return alert("Invalid item selected");
 
-    // Simulate quantity selection on menuList
-    const hiddenInput = document.getElementById(`qty_${menuItem.id}`);
-    hiddenInput.value = selectedQty;
+		// Simulate quantity selection on menuList
+		const hiddenInput = document.getElementById(`qty_${menuItem.id}`);
+		hiddenInput.value = selectedQty;
 
-    // Update coins visually
-    const coinRow = document.getElementById(`coin_${menuItem.id}`);
-    coinRow.querySelectorAll('.coin').forEach(c => c.classList.remove('selected'));
-    const coinToSelect = Array.from(coinRow.querySelectorAll('.coin'))
-      .find(c => parseInt(c.dataset.value) === selectedQty);
-    if (coinToSelect) coinToSelect.classList.add('selected');
+		// Update coins visually
+		const coinRow = document.getElementById(`coin_${menuItem.id}`);
+		coinRow.querySelectorAll('.coin').forEach(c => c.classList.remove('selected'));
+		const coinToSelect = Array.from(coinRow.querySelectorAll('.coin'))
+		  .find(c => parseInt(c.dataset.value) === selectedQty);
+		if (coinToSelect) coinToSelect.classList.add('selected');
 
-    // Reset add item form for next item
-    serialContainer.querySelectorAll('.coin').forEach(c => c.classList.remove('selected'));
-    qtyContainer.querySelectorAll('.coin').forEach(c => c.classList.remove('selected'));
-    qtyContainer.querySelector('div[data-value="0"]').classList.add('selected');
+		// Reset add item form for next item
+		serialContainer.querySelectorAll('.coin').forEach(c => c.classList.remove('selected'));
+		qtyContainer.querySelectorAll('.coin').forEach(c => c.classList.remove('selected'));
+		qtyContainer.querySelector('div[data-value="0"]').classList.add('selected');
 
-    const alteredItem = addedMenuItemsArr.filter(itm => itm.id !== menuItem.id );
-    
-    const alterMenuItem = JSON.parse(JSON.stringify(menuItem)); 
+		const alteredItem = addedMenuItemsArr.filter(itm => itm.id !== menuItem.id );
+		
+		const alterMenuItem = JSON.parse(JSON.stringify(menuItem)); 
 
-    alterMenuItem.quantity = selectedQty;
+		alterMenuItem.quantity = selectedQty;
 
-    addedMenuItemsArr = [...alteredItem, alterMenuItem];
+		addedMenuItemsArr = [...alteredItem, alterMenuItem];
 
-    qtyInput.value = 0;
-    selectedSerial = null;
-    selectedQty = 0;
+		qtyInput.value = 0;
+		selectedSerial = null;
+		selectedQty = 0;
 
-    document.getElementById('selectedmenuItem').value = '';
+		document.getElementById('selectedmenuItem').value = '';
 
-    showAddedMenuItems();
+		showAddedMenuItems();
+	}
     
   };
 
   
 }
 
+function getNextOrder(now){
+	  const nextDate = new Date(now);
+	  nextDate.setDate(now.getDate() + 1);
 
+	  const pad = n => n.toString().padStart(2, '0');
+	  const datetimeStr = `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}0000`;
+	  
+	  const nextDatetimeStr = `${nextDate.getFullYear()}${pad(nextDate.getMonth()+1)}${pad(nextDate.getDate())}0000`;
+	  
+	  const dateVal = parseInt(datetimeStr, 10);
+	  
+	  const nextDateVal = parseInt(nextDatetimeStr, 10);
+	  
+	  const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+	  
+	  const dayOrders = (orders.length <= 0) ? [dateVal] : orders.filter(itm => itm.serial > dateVal && itm.serial < nextDateVal).map(itm => itm.serial);
+	  
+	  const nextSerial = (dayOrders.length === 0) ? (dateVal + 1) : (Math.max(...dayOrders) + 1);
+	  
+	  return nextSerial;
+}
 
 function prepareOrderHeader() {
-  const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-  const nextSerial = orders.length + 1;
+  
   const now = new Date();
+  
+  const nextSerial = getNextOrder(now);
+  
   document.getElementById('orderNo').value = nextSerial;
   document.getElementById('orderDate').value = now.toLocaleDateString();
   document.getElementById('orderTime').value = now.toLocaleTimeString();
 }
 
 function saveOrder(e) {
-  e.preventDefault();
-  const selectedItems = [];
-  menuItems.forEach(item => {
-    const qty = parseInt(document.getElementById(`qty_${item.id}`).value || '0', 10);
-    if (qty > 0) {
-      selectedItems.push({ ...item, quantity: qty });
-    }
-  });
-  if (selectedItems.length === 0) return alert("No items selected.");
+	
+	if(editingOrderSerial == null){	
+	  e.preventDefault();
+	  const selectedItems = [];
+	  menuItems.forEach(item => {
+		const qty = parseInt(document.getElementById(`qty_${item.id}`).value || '0', 10);
+		if (qty > 0) {
+		  selectedItems.push({ ...item, quantity: qty });
+		}
+	  });
+	  if (selectedItems.length === 0) return alert("No items selected.");
 
-  const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-  const now = new Date();
+	  const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+	  const now = new Date();
 
-  if (editingOrderSerial) {
-    const idx = orders.findIndex(o => o.serial === editingOrderSerial);
-    if (idx >= 0) {
-      orders[idx] = {
-        serial: editingOrderSerial,
-        date: now.toLocaleDateString(),
-        time: now.toLocaleTimeString(),
-        items: selectedItems
-      };
-    }
-    selectedInvoiceOrder = editingOrderSerial;
-    editingOrderSerial = null;
-  } else {
-    const order = {
-      serial: orders.length + 1,
-      date: now.toLocaleDateString(),
-      time: now.toLocaleTimeString(),
-      items: selectedItems
-    };
-    orders.push(order);
-    selectedInvoiceOrder = order.serial;
-  }
-  localStorage.setItem('orders', JSON.stringify(orders));
-  showTab(2);
+	  if (editingOrderSerial) {
+		const idx = orders.findIndex(o => o.serial === editingOrderSerial);
+		if (idx >= 0) {
+		  orders[idx] = {
+			serial: editingOrderSerial,
+			date: now.toLocaleDateString(),
+			time: now.toLocaleTimeString(),
+			items: selectedItems,
+			isCanceled: true
+		  };
+		}
+		selectedInvoiceOrder = editingOrderSerial;
+		editingOrderSerial = null;
+		showTab(1);
+	  } else {
+		const order = {
+		  serial: getNextOrder(now),
+		  date: now.toLocaleDateString(),
+		  time: now.toLocaleTimeString(),
+		  items: selectedItems
+		};
+		orders.push(order);
+		selectedInvoiceOrder = order.serial;
+	  }
+	  localStorage.setItem('orders', JSON.stringify(orders));
+	  showTab(2);
+	
+	} else {
+		
+		const confirmCancel = document.getElementById('cancelConfirm').value;
+		
+		if (confirmCancel && confirmCancel == 'cancel') {
+		
+			const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+			const otherOrders = orders.filter(itm => itm.serial !== editingOrderSerial);
+			const cancelOrder = orders.find(itm => itm.serial === editingOrderSerial);
+			if(cancelOrder){
+			    cancelOrder.isCanceled = true;
+				const allOrders = [...otherOrders, cancelOrder];
+				localStorage.setItem('orders', JSON.stringify(allOrders));
+				showTab(1);
+			} else {
+				alert("Order Not Found");
+			}			
+		  
+		} else {
+			alert("write cancel to calcel");
+		}
+
+	
+	}
+
+  
 }
 
 function renderOrders(page = 1) {
@@ -511,6 +598,12 @@ function renderOrders(page = 1) {
   const grandTotal = filtered.reduce((sum, order) => {
     return sum + order.items.reduce((s, i) => s + i.price * i.quantity, 0);
   }, 0);
+  
+  const canceledTotal = filtered.filter(itm => itm.isCanceled).reduce((sum, order) => {
+    return sum + order.items.reduce((s, i) => s + i.price * i.quantity, 0);
+  }, 0);
+  
+  
 
   // pagination logic
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
@@ -525,15 +618,27 @@ function renderOrders(page = 1) {
   // render orders
   const ordersHtml = paginatedOrders.map(order => {
     const total = order.items.reduce((sum, i) => sum + i.price * i.quantity, 0);
-    return `
-      <div style="margin-bottom: 12px;">
-        <h3>Order #${order.serial} — ${order.date} ${order.time}</h3>
-        <p>
-          Total: ৳${total}
-          — <span class="invoice-link" onclick="viewInvoice(${order.serial})">View Invoice</span>
-        </p>
-      </div>
-    `;
+	if(order.isCanceled){
+		return `<div style="margin-bottom: 12px;">
+			<h3>Order #${order.serial} — ${order.date} ${order.time} ... canceled</h3>
+			<p>
+			  Total: ৳${total}
+			  — <span class="invoice-link" onclick="viewInvoice(${order.serial})">View Invoice</span>
+			</p>
+		  </div>
+		`;
+	} else {
+		return `
+		  <div style="margin-bottom: 12px;">
+			<h3>Order #${order.serial} — ${order.date} ${order.time}</h3>
+			<p>
+			  Total: ৳${total}
+			  — <span class="invoice-link" onclick="viewInvoice(${order.serial})">View Invoice</span>
+			</p>
+		  </div>
+		`;
+	}
+    
   }).join('');
 
   // pagination controls
@@ -546,7 +651,7 @@ function renderOrders(page = 1) {
   `;
 
   // 👉 Show grand total above report
-  container.innerHTML = `<h3>Grand Total: ৳${grandTotal}</h3>` + ordersHtml + paginationHtml;
+  container.innerHTML = `<h3>Grand Total: ৳${grandTotal - canceledTotal}</h3>` + `<h3>Canceled Total: ৳${canceledTotal}</h3>` + ordersHtml + paginationHtml;
 }
 
 
@@ -562,13 +667,18 @@ function viewInvoice(serial) {
 }
 
 function removeAddedMenuItem(removeItem){
-  menuItems.filter(item => item.id === removeItem).forEach(item => {
-    document.getElementById(`qty_${item.id}`).value = 0;
-  });
-  addedMenuItemsArr = addedMenuItemsArr.filter(itm => itm.id !== removeItem );
-  const coinRow = document.getElementById(`coin_${removeItem}`);
-  coinRow.querySelectorAll('.coin').forEach(c => c.classList.remove('selected'));
-  showAddedMenuItems();
+
+  if(editingOrderSerial == null ) {
+	  menuItems.filter(item => item.id === removeItem).forEach(item => {
+		document.getElementById(`qty_${item.id}`).value = 0;
+	  });
+	  addedMenuItemsArr = addedMenuItemsArr.filter(itm => itm.id !== removeItem );
+	  const coinRow = document.getElementById(`coin_${removeItem}`);
+	  coinRow.querySelectorAll('.coin').forEach(c => c.classList.remove('selected'));
+	  showAddedMenuItems();
+  }
+
+  
 }
 
 function showAddedMenuItems(){
@@ -616,8 +726,13 @@ function renderInvoice() {
     return;
   }
   const total = order.items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  
+  const ordr = (order.isCanceled) 
+	? `Invoice for <b>Order #${order.serial}</b> .... canceled`
+	: `Invoice for <b>Order #${order.serial}</b>`;
+  
   document.getElementById('invoiceDisplay').innerHTML = `
-    Invoice for <b>Order #${order.serial}</b>
+    ${ordr}
     <p>Date: ${order.date} — Time: ${order.time}</p>
     <table>
       <tr><th>Item</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr>
@@ -631,13 +746,21 @@ function renderInvoice() {
       `).join('')}
       <tr><td colspan="3"><strong>Total</strong></td><td><strong>৳${total}</strong></td></tr>
     </table>
-    <button onclick="editOrder(${order.serial})">Edit Order</button>
+    <button onclick="cancelOrder(${order.serial})">Cancel Order</button>
   `;
 }
 
-function editOrder(serial) {
-  editingOrderSerial = serial;
-  showTab(0);
+function cancelOrder(orderSerial) {
+  const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+  const otherOrders = orders.filter(itm => itm.serial !== orderSerial);
+  const order = orders.find(itm => itm.serial === orderSerial);
+  if(order){
+	  editingOrderSerial = order.serial;
+	  showTab(0);
+  } else {
+	alert("Order Not Found");
+  }
+  
 }
 
 function loadOrderForEdit(serial) {
@@ -699,10 +822,15 @@ async function exportOrdersPDF() {
   const grandTotal = filtered.reduce((sum, order) => {
     return sum + order.items.reduce((s, i) => s + i.price * i.quantity, 0);
   }, 0);
+  
+  const canceledTotal = filtered.filter(itm => itm.isCanceled).reduce((sum, order) => {
+    return sum + order.items.reduce((s, i) => s + i.price * i.quantity, 0);
+  }, 0);
 
   doc.setFontSize(14);
   doc.text(`Orders (${filter})`, 10, 10);
-  doc.text(`Grand Total: ${grandTotal}`, 10, 20);
+  doc.text(`Grand Total: ${grandTotal - canceledTotal}`, 10, 20);
+  doc.text(`Canceled Order: ${canceledTotal}`, 10, 20);
 
   let y = 30;
   filtered.forEach(order => {
@@ -752,20 +880,21 @@ function cleanupOldOrders() {
 }
 
 function newOrder() {
-  // reset edit mode
-  editingOrderSerial = null;
-  selectedInvoiceOrder = null;
 
-  document.getElementById('selectedmenuItem').value = '';
+	  editingOrderSerial = null;
+	  selectedInvoiceOrder = null;
 
-  // regenerate order header
-  prepareOrderHeader();
+	  document.getElementById('selectedmenuItem').value = '';
 
-  // reset menu & quantities
-  renderMenu();
+	  // regenerate order header
+	  prepareOrderHeader();
 
-  // switch to Take Order tab
-  showTab(0);
+	  // reset menu & quantities
+	  renderMenu();
+
+	  // switch to Take Order tab
+	  showTab(0);
+	  
 }
 
 
